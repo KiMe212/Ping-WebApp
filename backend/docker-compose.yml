@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+  web:
+    container_name: "ping-webapp-web"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    entrypoint: sh -c "python manage.py migrate && python manage.py runserver 0:8080"
+    depends_on:
+      - db
+    volumes:
+      - ./ping_app:/app/ping_app
+    env_file:
+      - .environment/local/app
+    ports:
+      - "8080:8080"
+
+  ping:
+    container_name: "ping-webapp-ping"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["python", "manage.py", "ping"]
+    depends_on:
+      - web
+      - db
+    volumes:
+      - ./ping_app:/app/ping_app
+    env_file:
+      - .environment/local/app
+
+  db:
+    container_name: "ping-webapp-db"
+    image: postgres:15.1-alpine
+    ports:
+      - "3432:5432"
+    env_file:
+      - .environment/local/db
+    volumes:
+      - postgres_webapp:/var/lib/postgresql/data
+
+volumes:
+  postgres_webapp:

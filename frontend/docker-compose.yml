@@ -1,0 +1,13 @@
+version: "3"
+
+services:
+  ping-webapp-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ping-webapp/frontend
+    container_name: ping-webapp-frontend
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/app
